@@ -81,8 +81,7 @@ def pozicia_hraca(sachovnica,hrac):
     for i in range(1,len(sachovnica)):
         for j in range(1,len(sachovnica)):
             if sachovnica[i][j]==hrac:HracX, HracY = j,i
-    pozicia_hraca=[HracX,HracY]  
-    return pozicia_hraca
+    return HracX, HracY  
 
 
 def pozicie_hracov(sachovnica):
@@ -95,13 +94,9 @@ def pozicie_hracov(sachovnica):
     for i in range(1,len(sachovnica)):
         for j in range(1,len(sachovnica)):
             if sachovnica[i][j]=='A':
-                AHracX, AHracY = j,i
-                pozicie_panakov_A.append(AHracX-1)
-                pozicie_panakov_A.append(AHracY-1)
+                pozicie_panakov_A.extend([j - 1, i - 1])
             elif sachovnica[i][j]=='B':
-                BHracX, BHracY = j,i
-                pozicie_panakov_B.append(BHracX-1)
-                pozicie_panakov_B.append(BHracY-1)
+                pozicie_panakov_B.extend([j - 1, i - 1])
     return [pozicie_panakov_A,pozicie_panakov_B]
 
 
@@ -109,32 +104,23 @@ def pozicia_stredu(sachovnica):
     """
     Vráti súradnice stredu hracej plochy
     """
-    for i in range(1,len(sachovnica)):
-        for j in range(1,len(sachovnica)):
-            if sachovnica[i][j]=='X':StredIndex=i
-    return StredIndex
+    return len(sachovnica) // 2
 
 
 def volne_miesto_v_domceku(sachovnica,hrac):
     """
     Vráti kolko je volného miesta v domčeku daného hráča
     """
-    StredIndex=pozicia_stredu(sachovnica)
-    a,b=0,0
-    volne_miesta_v_domceku=int(len(sachovnica)/2-2)
-    if hrac=='A':
-        for i in range(int(len(sachovnica)/2-2)):
-            b=a
-            if sachovnica[StredIndex-(i+1)][StredIndex]==hrac:a=0 
-            else:a=1
-            if a==0 and b == 0:volne_miesta_v_domceku=int(len(sachovnica)/2-2)-(i+1)
-    else:
-        for i in range(int(len(sachovnica)/2-2)):
-            b=a
-            if sachovnica[StredIndex+(i+1)][StredIndex]==hrac:a=0
-            else:a=1 
-            if a==0 and b == 0:volne_miesta_v_domceku=int(len(sachovnica)/2-2)-(i+1)
-    return volne_miesta_v_domceku
+    StredIndex = pozicia_stredu(sachovnica)
+    max_miesta = (len(sachovnica) // 2) - 2
+    volne_miesta = max_miesta
+    posun = -1 if hrac == 'A' else 1
+    for i in range(max_miesta):
+        if sachovnica[StredIndex + (posun * (i + 1))][StredIndex] == hrac:
+            volne_miesta = max_miesta - (i + 1)
+        else:
+            break
+    return volne_miesta
 
 
 def pocet_krokov_do_ciela(sachovnica,hrac,HracX,HracY):
@@ -211,6 +197,7 @@ def pohyb(sachovnica,hrac,HracX,HracY):
     elif HracX-StredIndex==-1 and HracY-StredIndex<-1 and HracY>1:sachovnica[HracY][HracX],sachovnica[HracY-1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY-1,HracX
     elif HracX-StredIndex==-1 and HracY==1:sachovnica[HracY][HracX],sachovnica[HracY][HracX+1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX+1
     return sachovnica
+
 
 
 def simulacia_jedneho_panacika():
