@@ -123,7 +123,7 @@ def volne_miesto_v_domceku(sachovnica,hrac):
     return volne_miesta
 
 
-def pocet_krokov_do_ciela(sachovnica,hrac,HracX,HracY):
+def pocet_krokov_do_ciela(sachovnica,hrac,HracX,HracY): #OPTIMALIZOVAT
     """
     Vráti kolko krokov musí ešte daná figúrka vykonať, aby sa dostala na políčko do domčeka, kam patrí
     """
@@ -155,16 +155,14 @@ def znak_policka_na_ktore_dopadnem_po_n_tahoch(sachovnica,HracX,HracY,hrac,n):
     hracia_plocha2=gensachovnicu(len(sachovnica)-1)
     hracia_plocha_kopia=gensachovnicu(len(sachovnica)-1)
     hracia_plocha2[HracY][HracX]=hrac
-    for i in range(n):
-        HracX=pozicia_hraca(hracia_plocha2,hrac)[0]
-        HracY=pozicia_hraca(hracia_plocha2,hrac)[1]
+    for _ in range(n):
+        HracX, HracY = pozicia_hraca(hracia_plocha2, hrac)
         pohyb(hracia_plocha2,hrac,HracX,HracY)
-    HracX=pozicia_hraca(hracia_plocha2,hrac)[0]
-    HracY=pozicia_hraca(hracia_plocha2,hrac)[1]
+    HracX, HracY = pozicia_hraca(hracia_plocha2, hrac)
     return sachovnica[HracY][HracX]
 
 
-def pohyb(sachovnica,hrac,HracX,HracY):
+def pohyb(sachovnica,hrac,HracX,HracY): #OPTIMALIZOVAT
     """
     Vráti hraciu plochu už s vykonaným 1 krokom daného hráča
     """
@@ -199,6 +197,12 @@ def pohyb(sachovnica,hrac,HracX,HracY):
     return sachovnica
 
 
+def hod_kockou():
+    """
+    Hod kockou
+    """
+    return random.randint(1, 6)
+
 
 def simulacia_jedneho_panacika():
     """
@@ -221,21 +225,21 @@ def simulacia_jedneho_panacika():
     while pocet_krokov_do_ciela_!=0:
         os.system('cls')
         tlacsachovnicu(hracia_plocha)
-        hod_kockou = random.randint(1,6)
-        hody_kockou.append(hod_kockou)
+        hod = hod_kockou()
+        hody_kockou.append(hod)
         print("Hody kockou : ",hody_kockou)
         hracia_plocha2=copy.deepcopy(hracia_plocha)
         HracX=pozicia_hraca(hracia_plocha2,hrac)[0]
         HracY=pozicia_hraca(hracia_plocha2,hrac)[1]
         pocet_krokov_do_ciela_=pocet_krokov_do_ciela(hracia_plocha2,hrac,HracX,HracY)
         print("Počet krokov do cieľa : ",pocet_krokov_do_ciela_)
-        if hod_kockou>pocet_krokov_do_ciela_:#Hráč musí na konci hodiť také číslo aby sa presne dostal na políčko D najbližšie k stredu
+        if hod>pocet_krokov_do_ciela_:#Hráč musí na konci hodiť také číslo aby sa presne dostal na políčko D najbližšie k stredu
             print("Hráč hádže znova lebo hodil viac ako je krokov do ciela")
             time.sleep(2)
         else:
             time.sleep(2)
             hracia_plocha_kopia=gensachovnicu(len(hracia_plocha)-1)
-            for i in range(hod_kockou):
+            for i in range(hod):
                 time.sleep(0.1)
                 os.system('cls')
                 HracX=pozicia_hraca(hracia_plocha,hrac)[0]
@@ -263,16 +267,16 @@ def hra_2_hracov():
     tlacsachovnicu(hracia_plocha)
     global hody_hraca_A,hody_hraca_B
     hody_hraca_A,hody_hraca_B=[],[]
-    hod_kockou_A,hod_kockou_B=0,0
-    while hod_kockou_B==hod_kockou_A:#Hráči hádžu kockou, aby sa rozhodlo kto začne prvý, ten kto hodil väčšie číslo ide prvý
-        hod_kockou_A = random.randint(1,6)
-        hod_kockou_B = random.randint(1,6)
-        print("Hráč A hodil číslo : ",hod_kockou_A)
-        print("Hráč B hodil číslo : ",hod_kockou_B)
-        if hod_kockou_A > hod_kockou_B:hrac_na_rade='A'
-        elif hod_kockou_A < hod_kockou_B:hrac_na_rade='B'
+    hod_A,hod_B=0,0
+    while hod_B==hod_A:#Hráči hádžu kockou, aby sa rozhodlo kto začne prvý, ten kto hodil väčšie číslo ide prvý
+        hod_A = random.randint(1,6)
+        hod_B = random.randint(1,6)
+        print("Hráč A hodil číslo : ",hod_A)
+        print("Hráč B hodil číslo : ",hod_B)
+        if hod_A > hod_B:hrac_na_rade='A'
+        elif hod_A < hod_B:hrac_na_rade='B'
         else: print("Hráči hodili rovnaké čísla hádže sa ešte raz")
-        if hod_kockou_A != hod_kockou_B:print("Začína hráč ",hrac_na_rade)
+        if hod_A != hod_B:print("Začína hráč ",hrac_na_rade)
     input("Stlač ENTER pre začiatok hry")
     global HracX_vybratej_figurky, HracY_vybratej_figurky, hracia_plocha_kopia, volne_miesto_v_domceku_A,volne_miesto_v_domceku_B
     volne_miesto_v_domceku_A,volne_miesto_v_domceku_B = volne_miesto_v_domceku(hracia_plocha,'A'),volne_miesto_v_domceku(hracia_plocha,'B')
@@ -282,26 +286,26 @@ def hra_2_hracov():
         vyber_figurky_na_pohyb=0
         counter_pohybu=0
         if hrac_na_rade == 'A':#Hodu kockou hráča A a zápis toho hodu do listu so všetkými hodmi hráča A
-            hod_kockou = random.randint(1,6)
-            hody_hraca_A.append(hod_kockou)
-            if hod_kockou==6 and hracia_plocha[1][StredIndex+1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[0])/2<(velkost-3)/2:hracia_plocha[1][StredIndex+1]=hrac_na_rade
-            else:counter_pohybu+=hod_kockou
+            hod = hod_kockou()
+            hody_hraca_A.append(hod)
+            if hod==6 and hracia_plocha[1][StredIndex+1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[0])/2<(velkost-3)/2:hracia_plocha[1][StredIndex+1]=hrac_na_rade
+            else:counter_pohybu+=hod
         else:#Hodu kockou hráča B a zápis toho hodu do listu so všetkými hodmi hráča B
-            hod_kockou = random.randint(1,6)
-            hody_hraca_B.append(hod_kockou)
-            if hod_kockou==6 and hracia_plocha[len(hracia_plocha)-1][StredIndex-1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[1])/2<(velkost-3)/2:hracia_plocha[len(hracia_plocha)-1][StredIndex-1]=hrac_na_rade
-            else:counter_pohybu+=hod_kockou
-        while hod_kockou == 6:#Ak hráč hodí 6, hádže ešte raz
+            hod = hod_kockou()
+            hody_hraca_B.append(hod)
+            if hod==6 and hracia_plocha[len(hracia_plocha)-1][StredIndex-1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[1])/2<(velkost-3)/2:hracia_plocha[len(hracia_plocha)-1][StredIndex-1]=hrac_na_rade
+            else:counter_pohybu+=hod
+        while hod == 6:#Ak hráč hodí 6, hádže ešte raz
             if hrac_na_rade == 'A':
-                hod_kockou = random.randint(1,6)
-                hody_hraca_A.append(hod_kockou)
-                if hod_kockou==6 and hracia_plocha[1][StredIndex+1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[0])/2<(velkost-3)/2:hracia_plocha[1][StredIndex+1]=hrac_na_rade
-                else:counter_pohybu+=hod_kockou
+                hod = hod_kockou()
+                hody_hraca_A.append(hod)
+                if hod==6 and hracia_plocha[1][StredIndex+1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[0])/2<(velkost-3)/2:hracia_plocha[1][StredIndex+1]=hrac_na_rade
+                else:counter_pohybu+=hod
             else:
-                hod_kockou = random.randint(1,6)
-                hody_hraca_B.append(hod_kockou)
-                if hod_kockou==6 and hracia_plocha[len(hracia_plocha)-1][StredIndex-1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[1])/2<(velkost-3)/2:hracia_plocha[len(hracia_plocha)-1][StredIndex-1]=hrac_na_rade
-                else:counter_pohybu+=hod_kockou
+                hod = hod_kockou()
+                hody_hraca_B.append(hod)
+                if hod==6 and hracia_plocha[len(hracia_plocha)-1][StredIndex-1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[1])/2<(velkost-3)/2:hracia_plocha[len(hracia_plocha)-1][StredIndex-1]=hrac_na_rade
+                else:counter_pohybu+=hod
         os.system('cls')
         tlacsachovnicu(hracia_plocha)
         print("Všetky hody hráča A : ",hody_hraca_A)
@@ -313,7 +317,7 @@ def hra_2_hracov():
             else:
                 counter=0#Počítadlo(s kolkými hráčmi je možný ťah)
                 for i in range(int(len(list(pozicie_hracov(hracia_plocha)[0]))/2)):#Vípis všetkých figúriek hráča A a ich X,Y a či je možný ťah s určitou figúrkou
-                    if pocet_krokov_do_ciela(hracia_plocha,hrac_na_rade,pozicie_hracov(hracia_plocha)[0][i*2]+1,pozicie_hracov(hracia_plocha)[0][i*2+1]+1)>=counter_pohybu and znak_policka_na_ktore_dopadnem_po_n_tahoch(hracia_plocha,pozicie_hracov(hracia_plocha)[0][i*2]+1,pozicie_hracov(hracia_plocha)[0][i*2+1]+1,hrac_na_rade,hod_kockou)!=hrac_na_rade: 
+                    if pocet_krokov_do_ciela(hracia_plocha,hrac_na_rade,pozicie_hracov(hracia_plocha)[0][i*2]+1,pozicie_hracov(hracia_plocha)[0][i*2+1]+1)>=counter_pohybu and znak_policka_na_ktore_dopadnem_po_n_tahoch(hracia_plocha,pozicie_hracov(hracia_plocha)[0][i*2]+1,pozicie_hracov(hracia_plocha)[0][i*2+1]+1,hrac_na_rade,hod)!=hrac_na_rade: 
                         print("Figúrka",i+1,"--> ",end="")
                         for j in range(2):
                             if j==0:print("X: ",end="")
@@ -338,7 +342,7 @@ def hra_2_hracov():
             else:
                 counter=0#Počítadlo(s kolkými hráčmi je možný ťah)
                 for i in range(int(len(list(pozicie_hracov(hracia_plocha)[1]))/2)):#Vípis všetkých figúriek hráča B a ich X,Y a či je možný ťah s určitou figúrkou
-                    if pocet_krokov_do_ciela(hracia_plocha,hrac_na_rade,pozicie_hracov(hracia_plocha)[1][i*2]+1,pozicie_hracov(hracia_plocha)[1][i*2+1]+1)>=counter_pohybu and znak_policka_na_ktore_dopadnem_po_n_tahoch(hracia_plocha,pozicie_hracov(hracia_plocha)[1][i*2]+1,pozicie_hracov(hracia_plocha)[1][i*2+1]+1,hrac_na_rade,hod_kockou)!=hrac_na_rade:
+                    if pocet_krokov_do_ciela(hracia_plocha,hrac_na_rade,pozicie_hracov(hracia_plocha)[1][i*2]+1,pozicie_hracov(hracia_plocha)[1][i*2+1]+1)>=counter_pohybu and znak_policka_na_ktore_dopadnem_po_n_tahoch(hracia_plocha,pozicie_hracov(hracia_plocha)[1][i*2]+1,pozicie_hracov(hracia_plocha)[1][i*2+1]+1,hrac_na_rade,hod)!=hrac_na_rade:
                         print("Figúrka",i+1,"--> ",end="")
                         for j in range(2):
                             if j==0:print("X: ",end="")
