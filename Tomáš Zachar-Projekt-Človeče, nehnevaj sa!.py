@@ -32,41 +32,75 @@ def gensachovnicu(n):
     """
     Generuje a vráti hraciu plochu n x n
     """
+    
+    # Vytvorenie prvého riadku s číslami
     prvyriadok = []
     for i in range(n):
-        if i>9:prvyriadok.append(i-(10*(i//10)))
-        else:prvyriadok.append(i)
-    hracia_plocha = [["0"]*n for _ in range(n)]
-    X=int((n-1)/2)
-    hracia_plocha[X][X]='X'
-    hracia_plocha[X][n-1],hracia_plocha[n-1][X],hracia_plocha[X][0],hracia_plocha[0][X]='*','*','*','*'
-    for i in range(1,int(((n-1)/2))):
-        hracia_plocha[X-i][X],hracia_plocha[X][X-i],hracia_plocha[X+i][X],hracia_plocha[X][X+i]='D','D','D','D'
+        if i > 9:
+            prvyriadok.append(i - (10 * (i // 10)))
+        else:
+            prvyriadok.append(i)
+    
+    # Inicializácia hracej plochy ako mriežky s hodnotami "0"
+    hracia_plocha = [["0"] * n for _ in range(n)]
+    
+    # Určenie stredu plochy (X, X)
+    X = int((n - 1) / 2)
+    
+    # Nastavenie stredu a okrajov na špeciálne znaky
+    hracia_plocha[X][X] = 'X'
+    hracia_plocha[X][n - 1], hracia_plocha[n - 1][X], hracia_plocha[X][0], hracia_plocha[0][X] = '*', '*', '*', '*'
+    
+    # Vytváranie domčekov, označené "D"
+    for i in range(1, int(((n - 1) / 2))):
+        hracia_plocha[X - i][X] = 'D'
+        hracia_plocha[X][X - i] = 'D'
+        hracia_plocha[X + i][X] = 'D'
+        hracia_plocha[X][X + i] = 'D'
+    
+    # Zmena hodnôt "0" na medzery
     for i in range(n):
         for j in range(n):
-            if hracia_plocha[j][i]=='0':hracia_plocha[j][i]=' '
+            if hracia_plocha[j][i] == '0':
+                hracia_plocha[j][i] = ' '
+    
+    # Nastavenie cesty hráčov "*"
     for i in range(n):
-        if i == X:continue
-        hracia_plocha[i][X+1],hracia_plocha[i][X-1]='*','*'
+        if i == X:
+            continue
+        hracia_plocha[i][X + 1], hracia_plocha[i][X - 1] = '*', '*'
+    
     for i in range(n):
-        if i == X:continue
-        hracia_plocha[X+1][i],hracia_plocha[X-1][i]='*','*'
-    hracia_plocha.insert(0,prvyriadok)
+        if i == X:
+            continue
+        hracia_plocha[X + 1][i], hracia_plocha[X - 1][i] = '*', '*'
+    
+    # Vkladanie prvého riadku do hracej plochy
+    hracia_plocha.insert(0, prvyriadok)
+    
+    # Pridanie "prázdnej" prvej hodnoty do prvého riadku
     nulty_riadok = list(hracia_plocha[0])
-    nulty_riadok.insert(0," ")
-    hracia_plocha[0]=nulty_riadok
+    nulty_riadok.insert(0, " ")
+    hracia_plocha[0] = nulty_riadok
+    
+    # Pridanie číslovania riadkov
     for i in range(n):
-        Ity_riadok = list(hracia_plocha[i+1])
-        if i > 9:Ity_riadok.insert(0,i-(10*(i//10))) 
-        else:Ity_riadok.insert(0,i)
-        hracia_plocha[i+1]=Ity_riadok
+        Ity_riadok = list(hracia_plocha[i + 1])
+        if i > 9:
+            Ity_riadok.insert(0, i - (10 * (i // 10)))
+        else:
+            Ity_riadok.insert(0, i)
+        hracia_plocha[i + 1] = Ity_riadok
+    
     return hracia_plocha
+
 
 
 def tlacsachovnicu(sachovnica):
     """
     Vykreslí hraciu plochu vygenerovanú funkciou gensachovnicu
     """
+
     for i in sachovnica:
         for j in i:
             print(j,end="  ")
@@ -78,6 +112,7 @@ def pozicia_hraca(sachovnica,hrac):
     Vráti X,Y figúrky na ploche , funguje len ak je na ploche len jeden hráč
     Použiva sa v simúlácii hry 1 hráča
     """
+
     for i in range(1,len(sachovnica)):
         for j in range(1,len(sachovnica)):
             if sachovnica[i][j]==hrac:HracX, HracY = j,i
@@ -89,6 +124,7 @@ def pozicie_hracov(sachovnica):
     Vráti X,Y figúriek na ploche, funguje ak je na ploche hocikolko figúriek
     Používa sa v hre 2 hráčov
     """
+
     pozicie_panakov_A=[]
     pozicie_panakov_B=[]
     for i in range(1,len(sachovnica)):
@@ -104,6 +140,7 @@ def pozicia_stredu(sachovnica):
     """
     Vráti súradnice stredu hracej plochy
     """
+
     return len(sachovnica) // 2
 
 
@@ -111,6 +148,7 @@ def volne_miesto_v_domceku(sachovnica,hrac):
     """
     Vráti kolko je volného miesta v domčeku daného hráča
     """
+
     StredIndex = pozicia_stredu(sachovnica)
     max_miesta = (len(sachovnica) // 2) - 2
     volne_miesta = max_miesta
@@ -127,6 +165,7 @@ def pocet_krokov_do_ciela(sachovnica,hrac,HracX,HracY): #OPTIMALIZOVAT
     """
     Vráti kolko krokov musí ešte daná figúrka vykonať, aby sa dostala na políčko do domčeka, kam patrí
     """
+
     sachovnica_nova=gensachovnicu(len(sachovnica)-1)
     sachovnica_nova[HracY][HracX]=hrac
     StredIndex = pozicia_stredu(sachovnica_nova)
@@ -151,6 +190,7 @@ def znak_policka_na_ktore_dopadnem_po_n_tahoch(sachovnica,HracX,HracY,hrac,n):
     Využíva sa na to, že keby sa figúrka dostala po hode kockou na políčko 
     s vlastným hráčom, táto figúrka nemôže vykonať tento ťah
     """
+
     global hracia_plocha_kopia
     hracia_plocha2=gensachovnicu(len(sachovnica)-1)
     hracia_plocha_kopia=gensachovnicu(len(sachovnica)-1)
@@ -166,6 +206,7 @@ def pohyb(sachovnica,hrac,HracX,HracY): #OPTIMALIZOVAT
     """
     Vráti hraciu plochu už s vykonaným 1 krokom daného hráča
     """
+
     global HracY_vybratej_figurky,HracX_vybratej_figurky,hracia_plocha_kopia
     StredIndex=pozicia_stredu(sachovnica)
     if HracY==1 and HracX==StredIndex and hrac=='A':sachovnica[HracY][HracX],sachovnica[HracY+1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY+1,HracX#VCHOD HRACA A DO DOMCEKA
@@ -201,7 +242,20 @@ def hod_kockou():
     """
     Hod kockou
     """
+
     return random.randint(1, 6)
+
+
+def nastavenie_velkosti_hracej_plochy():
+    """
+    Vypíta a nastaví veľkosť hracej plochy
+    """
+
+    while True:
+        velkost = int(input("Zadaj veľkosť hracej plochy (neparne číslo) : "))
+        if velkost % 2 == 1 and velkost >= 4:
+            return velkost
+        print("!!!ZADAJ NEPÁRNE ČÍSLO VäČŠIE AKO 3!!!")
 
 
 def simulacia_jedneho_panacika():
@@ -209,49 +263,75 @@ def simulacia_jedneho_panacika():
     Simulácia jedného hráča, na ploche je len 1 figúrka hráča A,
     hádže kockou a hýbe sa, kým sa nedostane na políčko D najbližšie k stredu
     """
-    velkost = int(input("Zadaj veľkosť hracej plochy (neparne číslo) : "))
-    while velkost%2==0 or velkost<3:
-        velkost = int(input("!!!ZADAJ NEPÁRNE ČÍSLO VäČŠIE AKO 3!!! : "))
+    
+    # Nastavenie veľkosti hracej plochy
+    velkost = nastavenie_velkosti_hracej_plochy()
     os.system('cls')
-    hrac='A'
+    
+    # Inicializácia hráča a hracej plochy
+    hrac = 'A'
     hracia_plocha = list(gensachovnicu(velkost))
-    StredIndex=pozicia_stredu(hracia_plocha)
-    hracia_plocha[1][StredIndex+1]=hrac
+    
+    StredIndex = pozicia_stredu(hracia_plocha)
+    hracia_plocha[1][StredIndex + 1] = hrac
+    
     tlacsachovnicu(hracia_plocha)
-    hody_kockou=[]
-    pocet_krokov_do_ciela_=None
-    global volne_miesto_v_domceku_A,hracia_plocha_kopia
-    volne_miesto_v_domceku_A = volne_miesto_v_domceku(hracia_plocha,hrac)
-    while pocet_krokov_do_ciela_!=0:
+    
+    hody_kockou = []
+    pocet_krokov_do_ciela_ = None
+    
+    global volne_miesto_v_domceku_A, hracia_plocha_kopia
+    volne_miesto_v_domceku_A = volne_miesto_v_domceku(hracia_plocha, hrac)
+    
+    # Hlavný herný cyklus, kým hráč nedosiahne cieľ
+    while pocet_krokov_do_ciela_ != 0:
         os.system('cls')
         tlacsachovnicu(hracia_plocha)
+        
+        # Hráč hádže kockou
         hod = hod_kockou()
         hody_kockou.append(hod)
-        print("Hody kockou : ",hody_kockou)
-        hracia_plocha2=copy.deepcopy(hracia_plocha)
-        HracX=pozicia_hraca(hracia_plocha2,hrac)[0]
-        HracY=pozicia_hraca(hracia_plocha2,hrac)[1]
-        pocet_krokov_do_ciela_=pocet_krokov_do_ciela(hracia_plocha2,hrac,HracX,HracY)
-        print("Počet krokov do cieľa : ",pocet_krokov_do_ciela_)
-        if hod>pocet_krokov_do_ciela_:#Hráč musí na konci hodiť také číslo aby sa presne dostal na políčko D najbližšie k stredu
-            print("Hráč hádže znova lebo hodil viac ako je krokov do ciela")
+        print("Hody kockou : ", hody_kockou)
+        
+        # Kopírovanie hracej plochy a získanie pozície hráča
+        hracia_plocha2 = copy.deepcopy(hracia_plocha)
+        HracX = pozicia_hraca(hracia_plocha2, hrac)[0]
+        HracY = pozicia_hraca(hracia_plocha2, hrac)[1]
+        
+        # Počet krokov do cieľa
+        pocet_krokov_do_ciela_ = pocet_krokov_do_ciela(hracia_plocha2, hrac, HracX, HracY)
+        print("Počet krokov do cieľa : ", pocet_krokov_do_ciela_)
+        
+        # Kontrola, či hráč hodil viac než je potrebné
+        if hod > pocet_krokov_do_ciela_:
+            print("Hráč hádže znova lebo hodil viac ako je krokov do cieľa")
             time.sleep(2)
         else:
             time.sleep(2)
-            hracia_plocha_kopia=gensachovnicu(len(hracia_plocha)-1)
+            
+            # kópia hracej plochy na pohyb
+            hracia_plocha_kopia = gensachovnicu(len(hracia_plocha) - 1)
+            
+            # Pohyb hráča podľa hodu
             for i in range(hod):
                 time.sleep(0.1)
                 os.system('cls')
-                HracX=pozicia_hraca(hracia_plocha,hrac)[0]
-                HracY=pozicia_hraca(hracia_plocha,hrac)[1]
-                tlacsachovnicu(list(pohyb(hracia_plocha,hrac,HracX,HracY)))
-                print("Hody kockou : ",hody_kockou)
-                hracia_plocha2=copy.deepcopy(hracia_plocha)
-                HracX=pozicia_hraca(hracia_plocha2,hrac)[0]
-                HracY=pozicia_hraca(hracia_plocha2,hrac)[1]
-                pocet_krokov_do_ciela_=pocet_krokov_do_ciela(hracia_plocha2,hrac,HracX,HracY)
-                print("Počet krokov do cieľa : ",pocet_krokov_do_ciela_)
+                
+                HracX, HracY = pozicia_hraca(hracia_plocha, hrac)
+                tlacsachovnicu(list(pohyb(hracia_plocha, hrac, HracX, HracY)))
+                
+                print("Hody kockou : ", hody_kockou)
+                
+                # Kopírovanie hracej plochy po pohybe
+                hracia_plocha2 = copy.deepcopy(hracia_plocha)
+                HracX, HracY = pozicia_hraca(hracia_plocha2, hrac)
+                
+                # Opätovné získanie počtu krokov do cieľa
+                pocet_krokov_do_ciela_ = pocet_krokov_do_ciela(hracia_plocha2, hrac, HracX, HracY)
+                print("Počet krokov do cieľa : ", pocet_krokov_do_ciela_)
+    
     input("Stlač ENTER pre návrat do menu")
+
 
 
 def hra_2_hracov():
@@ -259,9 +339,7 @@ def hra_2_hracov():
     Hra 2 hráčov
     (detailný opis na riadkoch 12-24)
     """
-    velkost = int(input("Zadaj veľkosť hracej plochy (neparne číslo) : "))
-    while velkost%2==0 or velkost<4:
-        velkost = int(input("!!!ZADAJ NEPÁRNE ČÍSLO VäČŠIE AKO 3!!! : "))
+    velkost = nastavenie_velkosti_hracej_plochy()
     os.system('cls')
     hracia_plocha = list(gensachovnicu(velkost))
     tlacsachovnicu(hracia_plocha)
