@@ -202,39 +202,97 @@ def znak_policka_na_ktore_dopadnem_po_n_tahoch(sachovnica,HracX,HracY,hrac,n):
     return sachovnica[HracY][HracX]
 
 
-def pohyb(sachovnica,hrac,HracX,HracY): #OPTIMALIZOVAT
+def pohyb(sachovnica, hrac, HracX, HracY):
     """
-    Vráti hraciu plochu už s vykonaným 1 krokom daného hráča
+    Vráti hraciu plochu už s vykonaným 1 krokom daného hráča.
     """
 
-    global HracY_vybratej_figurky,HracX_vybratej_figurky,hracia_plocha_kopia
-    StredIndex=pozicia_stredu(sachovnica)
-    if HracY==1 and HracX==StredIndex and hrac=='A':sachovnica[HracY][HracX],sachovnica[HracY+1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY+1,HracX#VCHOD HRACA A DO DOMCEKA
-    elif HracY==1 and HracX==StredIndex and hrac=='B':sachovnica[HracY][HracX],sachovnica[HracY][HracX+1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX+1
-    elif HracX==StredIndex and HracY-StredIndex<-1:sachovnica[HracY][HracX],sachovnica[HracY+1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY+1,HracX
-    elif HracY==len(sachovnica)-1 and HracX==StredIndex and hrac=='B':sachovnica[HracY][HracX],sachovnica[HracY-1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY-1,HracX#VCHOD HRACA B DO DOMCEKA
-    elif HracY==len(sachovnica)-1 and HracX==StredIndex and hrac=='A':sachovnica[HracY][HracX],sachovnica[HracY][HracX-1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX-1
-    elif HracX==StredIndex and HracY-StredIndex>1:sachovnica[HracY][HracX],sachovnica[HracY-1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY-1,HracX
-    elif HracX-StredIndex==1 and HracY-StredIndex==-1:sachovnica[HracY][HracX],sachovnica[HracY][HracX+1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX+1#VNUTORNE ROHY
-    elif HracX-StredIndex==-1 and HracY-StredIndex==1:sachovnica[HracY][HracX],sachovnica[HracY][HracX-1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX-1
-    elif HracX-StredIndex==1 and HracY-StredIndex==1:sachovnica[HracY][HracX],sachovnica[HracY+1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY+1,HracX
-    elif HracX-StredIndex==-1 and HracY-StredIndex==-1:sachovnica[HracY][HracX],sachovnica[HracY-1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY-1,HracX
-    elif HracX==StredIndex and HracY==1:sachovnica[HracY][HracX],sachovnica[HracY][HracX+1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX+1#STREDY RAMIEN
-    elif HracX==StredIndex and HracY==len(sachovnica)-1:sachovnica[HracY][HracX],sachovnica[HracY][HracX-1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX-1
-    elif HracY==StredIndex and HracX==1:sachovnica[HracY][HracX],sachovnica[HracY-1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY-1,HracX
-    elif HracY==StredIndex and HracX==len(sachovnica)-1:sachovnica[HracY][HracX],sachovnica[HracY+1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY+1,HracX
-    elif HracX-StredIndex==1 and HracY-StredIndex<-1:sachovnica[HracY][HracX],sachovnica[HracY+1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY+1,HracX#POHYB V PRAVOM HORNOM KVADRANTE
-    elif HracY-StredIndex==-1 and HracX-StredIndex>1 and HracX<len(sachovnica)-1:sachovnica[HracY][HracX],sachovnica[HracY][HracX+1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX+1
-    elif HracY-StredIndex==-1 and HracX==len(sachovnica)-1:sachovnica[HracY][HracX],sachovnica[HracY+1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY+1,HracX
-    elif HracY-StredIndex==1 and HracX-StredIndex>1:sachovnica[HracY][HracX],sachovnica[HracY][HracX-1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX-1#POHYB V PRAVOM DOLNOM KVADRANTE
-    elif HracX-StredIndex==1 and HracY-StredIndex>1 and HracY<len(sachovnica)-1:sachovnica[HracY][HracX],sachovnica[HracY+1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY+1,HracX
-    elif HracX-StredIndex==1 and HracY==len(sachovnica)-1:sachovnica[HracY][HracX],sachovnica[HracY][HracX-1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX-1
-    elif HracX-StredIndex==-1 and HracY-StredIndex>1:sachovnica[HracY][HracX],sachovnica[HracY-1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY-1,HracX#POHYB V LAVOM DOLNOM KVADRANTE
-    elif HracY-StredIndex==1 and HracX-StredIndex<-1 and HracX>1:sachovnica[HracY][HracX],sachovnica[HracY][HracX-1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX-1
-    elif HracY-StredIndex==1 and HracX==1:sachovnica[HracY][HracX],sachovnica[HracY-1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY-1,HracX
-    elif HracY-StredIndex==-1 and HracX-StredIndex<-1:sachovnica[HracY][HracX],sachovnica[HracY][HracX+1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX+1#POHYB V LAVOM HORNOM KVADRANTE
-    elif HracX-StredIndex==-1 and HracY-StredIndex<-1 and HracY>1:sachovnica[HracY][HracX],sachovnica[HracY-1][HracX],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY-1,HracX
-    elif HracX-StredIndex==-1 and HracY==1:sachovnica[HracY][HracX],sachovnica[HracY][HracX+1],HracY_vybratej_figurky,HracX_vybratej_figurky=hracia_plocha_kopia[HracY][HracX],hrac,HracY,HracX+1
+    global HracY_vybratej_figurky, HracX_vybratej_figurky, hracia_plocha_kopia
+
+    StredIndex = pozicia_stredu(sachovnica)
+    max_index = len(sachovnica) - 1
+    sx, sy = HracX, HracY
+
+    def move_to(nx, ny):
+        global HracX_vybratej_figurky, HracY_vybratej_figurky
+        sachovnica[sy][sx] = hracia_plocha_kopia[sy][sx]
+        sachovnica[ny][nx] = hrac
+        HracX_vybratej_figurky = nx
+        HracY_vybratej_figurky = ny
+
+    # VCHOD HRACA A DO DOMCEKA
+    if sy == 1 and sx == StredIndex:
+        if hrac == 'A':
+            move_to(sx, sy + 1)
+        elif hrac == 'B':
+            move_to(sx + 1, sy)
+
+    # VCHOD HRACA B DO DOMCEKA
+    elif sy == max_index and sx == StredIndex:
+        if hrac == 'B':
+            move_to(sx, sy - 1)
+        elif hrac == 'A':
+            move_to(sx - 1, sy)
+
+    # Pohyby po stredovej osi
+    elif sx == StredIndex:
+        if sy - StredIndex < -1:
+            move_to(sx, sy + 1)
+        elif sy - StredIndex > 1:
+            move_to(sx, sy - 1)
+        elif sy == 1:
+            move_to(sx + 1, sy)
+        elif sy == max_index:
+            move_to(sx - 1, sy)
+
+    elif sy == StredIndex:
+        if sx == 1:
+            move_to(sx, sy - 1)
+        elif sx == max_index:
+            move_to(sx, sy + 1)
+
+    # VNÚTORNÉ ROHY
+    elif sx - StredIndex == 1 and sy - StredIndex == -1:
+        move_to(sx + 1, sy)
+    elif sx - StredIndex == -1 and sy - StredIndex == 1:
+        move_to(sx - 1, sy)
+    elif sx - StredIndex == 1 and sy - StredIndex == 1:
+        move_to(sx, sy + 1)
+    elif sx - StredIndex == -1 and sy - StredIndex == -1:
+        move_to(sx, sy - 1)
+
+    # POHYB V PRAVOM HORNOM KVADRANTE
+    elif sx - StredIndex == 1 and sy - StredIndex < -1:
+        move_to(sx, sy + 1)
+    elif sy - StredIndex == -1 and sx - StredIndex > 1 and sx < max_index:
+        move_to(sx + 1, sy)
+    elif sy - StredIndex == -1 and sx == max_index:
+        move_to(sx, sy + 1)
+
+    # POHYB V PRAVOM DOLNOM KVADRANTE
+    elif sy - StredIndex == 1 and sx - StredIndex > 1:
+        move_to(sx - 1, sy)
+    elif sx - StredIndex == 1 and sy - StredIndex > 1 and sy < max_index:
+        move_to(sx, sy + 1)
+    elif sx - StredIndex == 1 and sy == max_index:
+        move_to(sx - 1, sy)
+
+    # POHYB V ĽAVOM DOLNOM KVADRANTE
+    elif sx - StredIndex == -1 and sy - StredIndex > 1:
+        move_to(sx, sy - 1)
+    elif sy - StredIndex == 1 and sx - StredIndex < -1 and sx > 1:
+        move_to(sx - 1, sy)
+    elif sy - StredIndex == 1 and sx == 1:
+        move_to(sx, sy - 1)
+
+    # POHYB V ĽAVOM HORNOM KVADRANTE
+    elif sy - StredIndex == -1 and sx - StredIndex < -1:
+        move_to(sx + 1, sy)
+    elif sx - StredIndex == -1 and sy - StredIndex < -1 and sy > 1:
+        move_to(sx, sy - 1)
+    elif sx - StredIndex == -1 and sy == 1:
+        move_to(sx + 1, sy)
+
     return sachovnica
 
 
