@@ -127,6 +127,7 @@ def pozicie_hracov(sachovnica):
 
     pozicie_panakov_A=[]
     pozicie_panakov_B=[]
+
     for i in range(1,len(sachovnica)):
         for j in range(1,len(sachovnica)):
             if sachovnica[i][j]=='A':
@@ -153,6 +154,7 @@ def volne_miesto_v_domceku(sachovnica,hrac):
     max_miesta = (len(sachovnica) // 2) - 2
     volne_miesta = max_miesta
     posun = -1 if hrac == 'A' else 1
+
     for i in range(max_miesta):
         if sachovnica[StredIndex + (posun * (i + 1))][StredIndex] == hrac:
             volne_miesta = max_miesta - (i + 1)
@@ -169,11 +171,13 @@ def pocet_krokov_do_ciela(sachovnica,hrac,HracX,HracY): #OPTIMALIZOVAT
     sachovnica_nova=gensachovnicu(len(sachovnica)-1)
     sachovnica_nova[HracY][HracX]=hrac
     StredIndex = pozicia_stredu(sachovnica_nova)
-    i=0
+    
     global hracia_plocha_kopia, volne_miesto_v_domceku_A, volne_miesto_v_domceku_B
     volne_miesto_v_domceku_A=volne_miesto_v_domceku(sachovnica,'A')
     volne_miesto_v_domceku_B=volne_miesto_v_domceku(sachovnica,'B')
     hracia_plocha_kopia=gensachovnicu(len(sachovnica_nova)-1)
+    
+    i=0
     while sachovnica_nova[StredIndex-(int(len(sachovnica_nova)/2-2)-(volne_miesto_v_domceku_A if hrac=='A' else volne_miesto_v_domceku_B))+(-1 if hrac=='A' else +1)][StredIndex]!=hrac:
         sachovnica2=list(sachovnica_nova)
         HracX=pozicia_hraca(sachovnica2,hrac)[0]
@@ -195,6 +199,7 @@ def znak_policka_na_ktore_dopadnem_po_n_tahoch(sachovnica,HracX,HracY,hrac,n):
     hracia_plocha2=gensachovnicu(len(sachovnica)-1)
     hracia_plocha_kopia=gensachovnicu(len(sachovnica)-1)
     hracia_plocha2[HracY][HracX]=hrac
+
     for _ in range(n):
         HracX, HracY = pozicia_hraca(hracia_plocha2, hrac)
         pohyb(hracia_plocha2,hrac,HracX,HracY)
@@ -207,11 +212,11 @@ def pohyb(sachovnica, hrac, HracX, HracY):
     Vráti hraciu plochu už s vykonaným 1 krokom daného hráča.
     """
 
-    global HracY_vybratej_figurky, HracX_vybratej_figurky, hracia_plocha_kopia
-
     StredIndex = pozicia_stredu(sachovnica)
     max_index = len(sachovnica) - 1
     sx, sy = HracX, HracY
+
+    global HracY_vybratej_figurky, HracX_vybratej_figurky, hracia_plocha_kopia
 
     def move_to(nx, ny):
         global HracX_vybratej_figurky, HracY_vybratej_figurky
@@ -397,133 +402,237 @@ def hra_2_hracov():
     Hra 2 hráčov
     (detailný opis na riadkoch 12-24)
     """
+    
+    # Nastavenie veľkosti hracej plochy
     velkost = nastavenie_velkosti_hracej_plochy()
     os.system('cls')
+    
+    # Generovanie a zobrazenie hracej plochy
     hracia_plocha = list(gensachovnicu(velkost))
     tlacsachovnicu(hracia_plocha)
-    global hody_hraca_A,hody_hraca_B
-    hody_hraca_A,hody_hraca_B=[],[]
-    hod_A,hod_B=0,0
-    while hod_B==hod_A:#Hráči hádžu kockou, aby sa rozhodlo kto začne prvý, ten kto hodil väčšie číslo ide prvý
-        hod_A = random.randint(1,6)
-        hod_B = random.randint(1,6)
-        print("Hráč A hodil číslo : ",hod_A)
-        print("Hráč B hodil číslo : ",hod_B)
-        if hod_A > hod_B:hrac_na_rade='A'
-        elif hod_A < hod_B:hrac_na_rade='B'
-        else: print("Hráči hodili rovnaké čísla hádže sa ešte raz")
-        if hod_A != hod_B:print("Začína hráč ",hrac_na_rade)
+    
+    global hody_hraca_A, hody_hraca_B
+    hody_hraca_A, hody_hraca_B = [], []
+    
+    hod_A, hod_B = 0, 0
+    
+    # Rozhodnutie, kto začne hádzaním kociek
+    while hod_B == hod_A:
+        hod_A = random.randint(1, 6)
+        hod_B = random.randint(1, 6)
+        print("Hráč A hodil číslo : ", hod_A)
+        print("Hráč B hodil číslo : ", hod_B)
+        
+        if hod_A > hod_B:
+            hrac_na_rade = 'A'
+        elif hod_A < hod_B:
+            hrac_na_rade = 'B'
+        else:
+            print("Hráči hodili rovnaké čísla hádže sa ešte raz")
+        
+        if hod_A != hod_B:
+            print("Začína hráč ", hrac_na_rade)
+    
     input("Stlač ENTER pre začiatok hry")
-    global HracX_vybratej_figurky, HracY_vybratej_figurky, hracia_plocha_kopia, volne_miesto_v_domceku_A,volne_miesto_v_domceku_B
-    volne_miesto_v_domceku_A,volne_miesto_v_domceku_B = volne_miesto_v_domceku(hracia_plocha,'A'),volne_miesto_v_domceku(hracia_plocha,'B')
-    hra=True
-    StredIndex=pozicia_stredu(hracia_plocha)
-    while hra==True:#Hlavný cyklus ktorý beží až kým jeden z hráčov nevyhrá
-        vyber_figurky_na_pohyb=0
-        counter_pohybu=0
-        if hrac_na_rade == 'A':#Hodu kockou hráča A a zápis toho hodu do listu so všetkými hodmi hráča A
+    
+    # Definovanie premenných pre pozície figúrok a voľné miesta
+    global HracX_vybratej_figurky, HracY_vybratej_figurky, hracia_plocha_kopia, volne_miesto_v_domceku_A, volne_miesto_v_domceku_B
+    volne_miesto_v_domceku_A, volne_miesto_v_domceku_B = volne_miesto_v_domceku(hracia_plocha, 'A'), volne_miesto_v_domceku(hracia_plocha, 'B')
+    
+    hra = True
+    StredIndex = pozicia_stredu(hracia_plocha)
+    
+    # Hlavný cyklus hry, ktorý beží až kým niekto nevyhrá
+    while hra == True:
+        vyber_figurky_na_pohyb = 0
+        counter_pohybu = 0
+        
+        if hrac_na_rade == 'A':  # Hráč A hádže kockou
             hod = hod_kockou()
             hody_hraca_A.append(hod)
-            if hod==6 and hracia_plocha[1][StredIndex+1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[0])/2<(velkost-3)/2:hracia_plocha[1][StredIndex+1]=hrac_na_rade
-            else:counter_pohybu+=hod
-        else:#Hodu kockou hráča B a zápis toho hodu do listu so všetkými hodmi hráča B
+
+            target_pos = StredIndex + 1
+            target_cell = hracia_plocha[1][target_pos]
+            
+            # Podmienka, či sa dá pohybovať
+            condition = hod == 6 and target_cell != hrac_na_rade and len(pozicie_hracov(hracia_plocha)[0]) / 2 < (velkost - 3) / 2
+            
+            if condition:
+                hracia_plocha[1][target_pos] = hrac_na_rade
+            else:
+                counter_pohybu += hod
+        
+        else:  # Hráč B hádže kockou
             hod = hod_kockou()
             hody_hraca_B.append(hod)
-            if hod==6 and hracia_plocha[len(hracia_plocha)-1][StredIndex-1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[1])/2<(velkost-3)/2:hracia_plocha[len(hracia_plocha)-1][StredIndex-1]=hrac_na_rade
-            else:counter_pohybu+=hod
-        while hod == 6:#Ak hráč hodí 6, hádže ešte raz
+
+            target_pos = StredIndex - 1
+            target_cell = hracia_plocha[len(hracia_plocha) - 1][target_pos]
+            
+            # Podmienka, či sa dá pohybovať
+            condition = hod == 6 and target_cell != hrac_na_rade and len(pozicie_hracov(hracia_plocha)[1]) / 2 < (velkost - 3) / 2
+
+            if condition:
+                hracia_plocha[len(hracia_plocha) - 1][target_pos] = hrac_na_rade
+            else:
+                counter_pohybu += hod
+
+        # Ak hráč hodí 6, hádže ešte raz
+        while hod == 6:
             if hrac_na_rade == 'A':
                 hod = hod_kockou()
                 hody_hraca_A.append(hod)
-                if hod==6 and hracia_plocha[1][StredIndex+1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[0])/2<(velkost-3)/2:hracia_plocha[1][StredIndex+1]=hrac_na_rade
-                else:counter_pohybu+=hod
+
+                target_pos = StredIndex + 1
+                target_cell = hracia_plocha[1][target_pos]
+                condition = hod == 6 and target_cell != hrac_na_rade and len(pozicie_hracov(hracia_plocha)[0]) / 2 < (velkost - 3) / 2
+                
+                if condition:
+                    hracia_plocha[1][target_pos] = hrac_na_rade
+                else:
+                    counter_pohybu += hod
             else:
                 hod = hod_kockou()
                 hody_hraca_B.append(hod)
-                if hod==6 and hracia_plocha[len(hracia_plocha)-1][StredIndex-1]!=hrac_na_rade and len(pozicie_hracov(hracia_plocha)[1])/2<(velkost-3)/2:hracia_plocha[len(hracia_plocha)-1][StredIndex-1]=hrac_na_rade
-                else:counter_pohybu+=hod
+
+                target_pos = StredIndex - 1
+                target_cell = hracia_plocha[len(hracia_plocha) - 1][target_pos]
+                condition = hod == 6 and target_cell != hrac_na_rade and len(pozicie_hracov(hracia_plocha)[1]) / 2 < (velkost - 3) / 2
+                
+                if condition:
+                    hracia_plocha[len(hracia_plocha) - 1][target_pos] = hrac_na_rade
+                else:
+                    counter_pohybu += hod
+
+        # Obnovenie a zobrazenie hracej plochy
         os.system('cls')
         tlacsachovnicu(hracia_plocha)
-        print("Všetky hody hráča A : ",hody_hraca_A)
-        print("Všetky hody hráča B : ",hody_hraca_B)
-        print("Na rade je hráč",hrac_na_rade,"a hodil :",counter_pohybu,", môže pohnúť týmito figúrkami :")
-        if hrac_na_rade=='A':#Výber figúrky na pohyb hráča A
-            figurky_s_nepovolenymi_tahmi=[]
-            if len(pozicie_hracov(hracia_plocha)[0])<1:print("Nemáš ešte figúrky na ploche, figúrka sa ti objaví keď hodíš 6, stlač ENTER pre hru ďalej."),input()#Toto sa vykoná ak hráč A nemá žiadnu figúrku na ploche
+        print("Všetky hody hráča A : ", hody_hraca_A)
+        print("Všetky hody hráča B : ", hody_hraca_B)
+        print("Na rade je hráč", hrac_na_rade, "a hodil :", counter_pohybu, ", môže pohnúť týmito figúrkami :")
+        
+        if hrac_na_rade == 'A':  # Výber figúrky na pohyb hráča A
+            figurky_s_nepovolenymi_tahmi = []
+            
+            if len(pozicie_hracov(hracia_plocha)[0]) < 1:
+                print("Nemáš ešte figúrky na ploche, figúrka sa ti objaví keď hodíš 6, stlač ENTER pre hru ďalej.")
+                input()
             else:
-                counter=0#Počítadlo(s kolkými hráčmi je možný ťah)
-                for i in range(int(len(list(pozicie_hracov(hracia_plocha)[0]))/2)):#Vípis všetkých figúriek hráča A a ich X,Y a či je možný ťah s určitou figúrkou
-                    if pocet_krokov_do_ciela(hracia_plocha,hrac_na_rade,pozicie_hracov(hracia_plocha)[0][i*2]+1,pozicie_hracov(hracia_plocha)[0][i*2+1]+1)>=counter_pohybu and znak_policka_na_ktore_dopadnem_po_n_tahoch(hracia_plocha,pozicie_hracov(hracia_plocha)[0][i*2]+1,pozicie_hracov(hracia_plocha)[0][i*2+1]+1,hrac_na_rade,hod)!=hrac_na_rade: 
-                        print("Figúrka",i+1,"--> ",end="")
+                counter = 0  # Počítadlo, s koľkými hráčmi je možný ťah
+                for i in range(int(len(list(pozicie_hracov(hracia_plocha)[0])) / 2)):  # Výpis figúriek hráča A
+                    X = pozicie_hracov(hracia_plocha)[0][i * 2] + 1
+                    Y = pozicie_hracov(hracia_plocha)[0][i * 2 + 1] + 1
+
+                    kroky_do_ciela = pocet_krokov_do_ciela(hracia_plocha, hrac_na_rade, X, Y)
+                    dopadne_na = znak_policka_na_ktore_dopadnem_po_n_tahoch(hracia_plocha, X, Y, hrac_na_rade, hod)
+
+                    if kroky_do_ciela >= counter_pohybu and dopadne_na != hrac_na_rade:
+                        print("Figúrka", i + 1, "--> ", end="")
                         for j in range(2):
-                            if j==0:print("X: ",end="")
-                            else:print("Y: ",end="")
-                            print(list(pozicie_hracov(hracia_plocha))[0][j+(i*2)],end=" ")
+                            if j == 0:
+                                print("X: ", end="")
+                            else:
+                                print("Y: ", end="")
+                            print(list(pozicie_hracov(hracia_plocha))[0][j + (i * 2)], end=" ")
                         print()
-                        counter+=1
-                    else: figurky_s_nepovolenymi_tahmi.append(i+1),print("Figúrkou",i+1,"nemôžeš pohnúť")
-                if counter != 0:#Výber figúrky, s ktorou sa chce hráč pohnúť, ak je aspoň s jednou možný ťah
-                    vyber_figurky_na_pohyb=int(input("Ktorou figúrkou chceš pohnúť? :"))
-                    while 1>vyber_figurky_na_pohyb or vyber_figurky_na_pohyb>len(list(pozicie_hracov(hracia_plocha)[0]))/2 or vyber_figurky_na_pohyb in figurky_s_nepovolenymi_tahmi:
+                        counter += 1
+                    else:
+                        figurky_s_nepovolenymi_tahmi.append(i + 1)
+                        print("Figúrkou", i + 1, "nemôžeš pohnúť")
+                
+                if counter != 0:  # Výber figúrky na pohyb
+                    vyber_figurky_na_pohyb = int(input("Ktorou figúrkou chceš pohnúť? :"))
+                    while 1 > vyber_figurky_na_pohyb or vyber_figurky_na_pohyb > len(list(pozicie_hracov(hracia_plocha)[0])) / 2 or vyber_figurky_na_pohyb in figurky_s_nepovolenymi_tahmi:
                         if vyber_figurky_na_pohyb in figurky_s_nepovolenymi_tahmi:
-                            print("Tou figúrkou nemôžeš pohnúť, zadaj nové číslo: ",end="")
-                            vyber_figurky_na_pohyb=int(input())
+                            print("Tou figúrkou nemôžeš pohnúť, zadaj nové číslo: ", end="")
+                            vyber_figurky_na_pohyb = int(input())
                         else:
-                            print("Zadaj číslo od :",1,"do :",counter,": ",end="")
-                            vyber_figurky_na_pohyb=int(input())
-                else:print("Nemáš žiadnu figúrku s ktorou môžeš pohnúť, stlač ENTER pre pokračovanie hry."),input()#Toto sa vykoná ak so žiadnou figúrkou nieje možný ťah
-        else:#Výber figúrky na pohyb hráča B
-            figurky_s_nepovolenymi_tahmi=[]
-            if len(pozicie_hracov(hracia_plocha)[1])/2<1:print("Nemáš ešte figúrky na ploche, figúrka sa ti objaví keď hodíš 6, stlač ENTER pre hru ďalej."),input()#Toto sa vykoná ak hráč B nemá žiadnu figúrku na ploche
+                            print("Zadaj číslo od :", 1, "do :", counter, ": ", end="")
+                            vyber_figurky_na_pohyb = int(input())
+                else:
+                    print("Nemáš žiadnu figúrku s ktorou môžeš pohnúť, stlač ENTER pre pokračovanie hry.")
+                    input()  # Ak nie je možný ťah
+        else:  # Výber figúrky na pohyb hráča B
+            figurky_s_nepovolenymi_tahmi = []
+            
+            if len(pozicie_hracov(hracia_plocha)[1]) / 2 < 1:
+                print("Nemáš ešte figúrky na ploche, figúrka sa ti objaví keď hodíš 6, stlač ENTER pre hru ďalej.")
+                input()
             else:
-                counter=0#Počítadlo(s kolkými hráčmi je možný ťah)
-                for i in range(int(len(list(pozicie_hracov(hracia_plocha)[1]))/2)):#Vípis všetkých figúriek hráča B a ich X,Y a či je možný ťah s určitou figúrkou
-                    if pocet_krokov_do_ciela(hracia_plocha,hrac_na_rade,pozicie_hracov(hracia_plocha)[1][i*2]+1,pozicie_hracov(hracia_plocha)[1][i*2+1]+1)>=counter_pohybu and znak_policka_na_ktore_dopadnem_po_n_tahoch(hracia_plocha,pozicie_hracov(hracia_plocha)[1][i*2]+1,pozicie_hracov(hracia_plocha)[1][i*2+1]+1,hrac_na_rade,hod)!=hrac_na_rade:
-                        print("Figúrka",i+1,"--> ",end="")
+                counter = 0  # Počítadlo, s koľkými hráčmi je možný ťah
+                for i in range(int(len(list(pozicie_hracov(hracia_plocha)[1])) / 2)):  # Výpis figúriek hráča B
+                    X = pozicie_hracov(hracia_plocha)[1][i * 2] + 1
+                    Y = pozicie_hracov(hracia_plocha)[1][i * 2 + 1] + 1
+
+                    kroky_do_ciela = pocet_krokov_do_ciela(hracia_plocha, hrac_na_rade, X, Y)
+                    dopadne_na = znak_policka_na_ktore_dopadnem_po_n_tahoch(hracia_plocha, X, Y, hrac_na_rade, hod)
+
+                    if kroky_do_ciela >= counter_pohybu and dopadne_na != hrac_na_rade:
+                        print("Figúrka", i + 1, "--> ", end="")
                         for j in range(2):
-                            if j==0:print("X: ",end="")
-                            else:print("Y: ",end="")
-                            print(list(pozicie_hracov(hracia_plocha))[1][j+(i*2)],end=" ")   
+                            if j == 0:
+                                print("X: ", end="")
+                            else:
+                                print("Y: ", end="")
+                            print(list(pozicie_hracov(hracia_plocha))[1][j + (i * 2)], end=" ")   
                         print()
-                        counter+=1
-                    else: figurky_s_nepovolenymi_tahmi.append(i+1),print("Figúrkou",i+1,"nemôžeš pohnúť")
-                if counter != 0:#Výber figúrky, s ktorou sa chce hráč pohnúť, ak je aspoň s jednou možný ťah
-                    vyber_figurky_na_pohyb=int(input("Ktorou figúrkou chceš pohnúť? :"))
-                    while 1>vyber_figurky_na_pohyb or vyber_figurky_na_pohyb>len(list(pozicie_hracov(hracia_plocha)[1]))/2 or vyber_figurky_na_pohyb in figurky_s_nepovolenymi_tahmi:
+                        counter += 1
+                    else:
+                        figurky_s_nepovolenymi_tahmi.append(i + 1)
+                        print("Figúrkou", i + 1, "nemôžeš pohnúť")
+                
+                if counter != 0:  # Výber figúrky na pohyb
+                    vyber_figurky_na_pohyb = int(input("Ktorou figúrkou chceš pohnúť? :"))
+                    while 1 > vyber_figurky_na_pohyb or vyber_figurky_na_pohyb > len(list(pozicie_hracov(hracia_plocha)[1])) / 2 or vyber_figurky_na_pohyb in figurky_s_nepovolenymi_tahmi:
                         if vyber_figurky_na_pohyb in figurky_s_nepovolenymi_tahmi:
-                            print("Tou figúrkou nemôžeš pohnúť, zadaj nové číslo: ",end="")
-                            vyber_figurky_na_pohyb=int(input())
+                            print("Tou figúrkou nemôžeš pohnúť, zadaj nové číslo: ", end="")
+                            vyber_figurky_na_pohyb = int(input())
                         else:
-                            print("Zadaj číslo od :",1,"do :",counter,": ",end="")
-                            vyber_figurky_na_pohyb=int(input())
-                else:print("Nemáš žiadnu figúrku s ktorou môžeš pohnúť, stlač ENTER pre pokračovanie hry."),input()#Toto sa vykoná ak so žiadnou figúrkou nieje možný ťah
-        if hrac_na_rade=='A' and vyber_figurky_na_pohyb!=0:#Pohyb hráča A vybratou figúrkou
-            HracX_vybratej_figurky = pozicie_hracov(hracia_plocha)[0][vyber_figurky_na_pohyb*2-2]+1
-            HracY_vybratej_figurky = pozicie_hracov(hracia_plocha)[0][vyber_figurky_na_pohyb*2-1]+1
-            hracia_plocha_kopia=copy.deepcopy(hracia_plocha)
-            pomocna_plocha=gensachovnicu(len(hracia_plocha)-1)
-            hracia_plocha_kopia[HracY_vybratej_figurky][HracX_vybratej_figurky]=pomocna_plocha[HracY_vybratej_figurky][HracX_vybratej_figurky]
+                            print("Zadaj číslo od :", 1, "do :", counter, ": ", end="")
+                            vyber_figurky_na_pohyb = int(input())
+                else:
+                    print("Nemáš žiadnu figúrku s ktorou môžeš pohnúť, stlač ENTER pre pokračovanie hry.")
+                    input()  # Ak nie je možný ťah
+        
+        # Pohyb figúrky pre hráča A
+        if hrac_na_rade == 'A' and vyber_figurky_na_pohyb != 0:
+            HracX_vybratej_figurky = pozicie_hracov(hracia_plocha)[0][vyber_figurky_na_pohyb * 2 - 2] + 1
+            HracY_vybratej_figurky = pozicie_hracov(hracia_plocha)[0][vyber_figurky_na_pohyb * 2 - 1] + 1
+            hracia_plocha_kopia = copy.deepcopy(hracia_plocha)
+            pomocna_plocha = gensachovnicu(len(hracia_plocha) - 1)
+            hracia_plocha_kopia[HracY_vybratej_figurky][HracX_vybratej_figurky] = pomocna_plocha[HracY_vybratej_figurky][HracX_vybratej_figurky]
+            
             for i in range(counter_pohybu):
                 time.sleep(0.1)
                 os.system('cls')
-                tlacsachovnicu((pohyb(hracia_plocha,hrac_na_rade,HracX_vybratej_figurky,HracY_vybratej_figurky)))
-                print("Všetky hody hráča A : ",hody_hraca_A)
-                print("Všetky hody hráča B : ",hody_hraca_B)
-        elif hrac_na_rade=='B' and vyber_figurky_na_pohyb!=0:#Pohyb hráča B vybratou figúrkou
-            HracX_vybratej_figurky = pozicie_hracov(hracia_plocha)[1][vyber_figurky_na_pohyb*2-2]+1
-            HracY_vybratej_figurky = pozicie_hracov(hracia_plocha)[1][vyber_figurky_na_pohyb*2-1]+1
-            hracia_plocha_kopia=copy.deepcopy(hracia_plocha)
-            pomocna_plocha=gensachovnicu(len(hracia_plocha)-1)
-            hracia_plocha_kopia[HracY_vybratej_figurky][HracX_vybratej_figurky]=pomocna_plocha[HracY_vybratej_figurky][HracX_vybratej_figurky]
+                tlacsachovnicu((pohyb(hracia_plocha, hrac_na_rade, HracX_vybratej_figurky, HracY_vybratej_figurky)))
+                print("Všetky hody hráča A : ", hody_hraca_A)
+                print("Všetky hody hráča B : ", hody_hraca_B)
+        
+        # Pohyb figúrky pre hráča B
+        elif hrac_na_rade == 'B' and vyber_figurky_na_pohyb != 0:
+            HracX_vybratej_figurky = pozicie_hracov(hracia_plocha)[1][vyber_figurky_na_pohyb * 2 - 2] + 1
+            HracY_vybratej_figurky = pozicie_hracov(hracia_plocha)[1][vyber_figurky_na_pohyb * 2 - 1] + 1
+            hracia_plocha_kopia = copy.deepcopy(hracia_plocha)
+            pomocna_plocha = gensachovnicu(len(hracia_plocha) - 1)
+            hracia_plocha_kopia[HracY_vybratej_figurky][HracX_vybratej_figurky] = pomocna_plocha[HracY_vybratej_figurky][HracX_vybratej_figurky]
+            
             for i in range(counter_pohybu):
                 time.sleep(0.1)
                 os.system('cls')
-                tlacsachovnicu((pohyb(hracia_plocha,hrac_na_rade,HracX_vybratej_figurky,HracY_vybratej_figurky)))
-                print("Všetky hody hráča A : ",hody_hraca_A)
-                print("Všetky hody hráča B : ",hody_hraca_B)
+                tlacsachovnicu((pohyb(hracia_plocha, hrac_na_rade, HracX_vybratej_figurky, HracY_vybratej_figurky)))
+                print("Všetky hody hráča A : ", hody_hraca_A)
+                print("Všetky hody hráča B : ", hody_hraca_B)
+        
+        # Kontrola, kto vyhral
         if volne_miesto_v_domceku(hracia_plocha,hrac_na_rade)==0:hra=False,print("!!!VYHRAL HRÁČ",hrac_na_rade,"!!!")#Skúška, či niektorý z hráčov hráč po dokončení ťahu vyhral
-        if hrac_na_rade=='A':hrac_na_rade='B'
-        else:hrac_na_rade='A'
+
+        # Prechod na ďalšieho hráča
+        if hrac_na_rade == 'A':
+            hrac_na_rade = 'B'
+        else:
+            hrac_na_rade = 'A'
+
     input("Stlač ENTER pre návrat do menu")
 
 
@@ -540,3 +649,4 @@ while True:
             print("Zadaj jedno z čísel 1,2 :")
         except ValueError:
             print("Zadaj jedno z čísel 1,2 :")
+            
